@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mi Biblioteca</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Placeholder Titulo (imagen seguramente)</h1>
+  </header>
+
+  <main>
+
+    <section class="agregar-libro">
+      <h2>Agregar un libro</h2>
+      <form id="form-libro">
+        <input type="text" id="titulo" placeholder="Título" required>
+        <input type="text" id="autor" placeholder="Autor" required>
+        <select id="categoria">
+          <option value="Novela">Novela</option>
+          <option value="Ciencia ficción">Ciencia ficción</option>
+          <option value="Infantil">Infantil</option>
+          <option value="Poesía">Poesía</option>
+          <option value="Otro">Otro</option>
+        </select>
+        <button type="submit">Agregar</button>
+      </form>
+    </section>
+
+    <section class="filtro">
+      <h2>Filtrar por categoría</h2>
+      <select id="filtro-categoria">
+        <option value="Todas">Todas</option>
+        <option value="Novela">Novela</option>
+        <option value="Ciencia ficción">Ciencia ficción</option>
+        <option value="Infantil">Infantil</option>
+        <option value="Poesía">Poesía</option>
+        <option value="Otro">Otro</option>
+      </select>
+    </section>
+
+    <section>
+      <h2>Libros disponibles</h2>
+      <ul class="lista-libros" id="lista-libros">
+        <!-- cada libro agregado manualmente se agrega aquí -->
+      </ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Biblioteca Central</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
