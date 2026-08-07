@@ -31,3 +31,4 @@ Una página con encabezado, formulario para agregar libros, filtro por categorí
 - [✓] Botón para eliminar o editar libros
 - [✓] Buscador por título o autor
 - [ ] Portadas de libros
+- [ ] Edicion de libros ya existentes o recien agregados
