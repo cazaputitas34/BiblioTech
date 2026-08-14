@@ -18,6 +18,13 @@ const contador = document.getElementById("contador-libros");
 const form = document.getElementById("form-libro");
 const inputBuscar = document.getElementById("buscar");
 const filtroCategoria = document.getElementById("filtro-categoria");
+const inputTitulo = document.getElementById("titulo");
+const previewImg = document.getElementById("preview-portada-img");
+const previewPlaceholder = document.getElementById("preview-portada-placeholder");
+const previewLoading = document.getElementById("preview-portada-loading");
+
+let portadaActual = null; // portada encontrada para el título que se está escribiendo
+let debouncePortada = null;
 
 function cargarLibros() {
   const guardados = localStorage.getItem(STORAGE_KEY);
@@ -51,8 +58,14 @@ function renderizarLibros() {
   filtrados.forEach(libro => {
     const li = document.createElement("li");
     li.className = "libro-item";
+
+    const portadaHtml = libro.portada
+      ? `<img class="libro-portada" src="${libro.portada}" alt="Portada de ${escapeHtml(libro.titulo)}">`
+      : `<div class="libro-portada"><i class="fa-solid fa-book"></i></div>`;
+
     li.innerHTML = `
-      <div class="libro-info">
+      ${portadaHtml}
+      <div class="libro-info flex-grow-1">
         <h3>${escapeHtml(libro.titulo)}</h3>
         <p>Autor: ${escapeHtml(libro.autor)}</p>
         <span class="etiqueta">${escapeHtml(libro.categoria)}</span>
@@ -64,6 +77,77 @@ function renderizarLibros() {
     lista.appendChild(li);
   });
 }
+
+// busca la portada de un libro en Open Library a partir del título (y autor, si se pasa)
+async function buscarPortada(titulo, autor) {
+  if (!titulo) return null;
+
+  try {
+    const params = new URLSearchParams({ title: titulo, limit: 1 });
+    if (autor) params.set("author", autor);
+
+    const res = await fetch(`https://openlibrary.org/search.json?${params.toString()}`);
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    const doc = data.docs && data.docs[0];
+    if (doc && doc.cover_i) {
+      return `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`;
+    }
+    return null;
+  } catch (err) {
+    console.error("Error buscando portada en Open Library:", err);
+    return null;
+  }
+}
+
+function mostrarPreviewCargando() {
+  previewImg.classList.add("d-none");
+  previewPlaceholder.classList.add("d-none");
+  previewLoading.classList.remove("d-none");
+}
+
+function mostrarPreviewPortada(url) {
+  previewLoading.classList.add("d-none");
+  if (url) {
+    previewImg.src = url;
+    previewImg.classList.remove("d-none");
+    previewPlaceholder.classList.add("d-none");
+  } else {
+    previewImg.classList.add("d-none");
+    previewPlaceholder.classList.remove("d-none");
+  }
+}
+
+function resetPreviewPortada() {
+  previewLoading.classList.add("d-none");
+  previewImg.classList.add("d-none");
+  previewPlaceholder.classList.remove("d-none");
+  portadaActual = null;
+}
+
+inputTitulo.addEventListener("input", function () {
+  clearTimeout(debouncePortada);
+  const titulo = inputTitulo.value.trim();
+
+  if (!titulo) {
+    resetPreviewPortada();
+    return;
+  }
+
+  mostrarPreviewCargando();
+
+  debouncePortada = setTimeout(async () => {
+    const autor = document.getElementById("autor").value.trim();
+    const url = await buscarPortada(titulo, autor);
+
+    // evita pisar el resultado si el usuario ya cambió el título mientras esperaba la respuesta
+    if (inputTitulo.value.trim() !== titulo) return;
+
+    portadaActual = url;
+    mostrarPreviewPortada(url);
+  }, 500);
+});
 
 // previene errror en el html por agregado de caracteres especiales en el título o autor del libro
 function escapeHtml(texto) {
@@ -81,9 +165,10 @@ form.addEventListener("submit", function (e) {
 
   if (!titulo || !autor) return;
 
-  libros.push({ id: crypto.randomUUID(), titulo, autor, categoria });
+  libros.push({ id: crypto.randomUUID(), titulo, autor, categoria, portada: portadaActual });
   guardarLibros();
   form.reset();
+  resetPreviewPortada();
   document.getElementById("titulo").focus();
   renderizarLibros();
 });

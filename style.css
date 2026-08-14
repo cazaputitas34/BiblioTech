@@ -91,6 +91,45 @@ h1, h2, h3, .panel-title {
   box-shadow: 0 0 0 0.2rem rgba(107, 66, 38, 0.15);
 }
 
+/* portada preview en el formulario */
+.portada-preview-wrap {
+  width: 52px;
+}
+
+.portada-preview {
+  width: 52px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #e6dccb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  color: var(--brand-light);
+  font-size: 1.1rem;
+}
+
+.portada-placeholder {
+  background-color: var(--cream);
+}
+
+/* portada en cada item de la lista */
+.libro-portada {
+  width: 46px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #eee1cc;
+  flex-shrink: 0;
+  background-color: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-light);
+  font-size: 1.1rem;
+}
+
 /* listado de libros */
 .lista-libros {
   display: flex;
@@ -104,7 +143,7 @@ h1, h2, h3, .panel-title {
 .libro-item {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   background-color: #fff;
   border: 1px solid #eee1cc;

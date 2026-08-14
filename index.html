@@ -37,7 +37,18 @@
             <form id="form-libro" class="mt-3" novalidate>
               <div class="mb-3">
                 <label for="titulo" class="form-label">Título</label>
-                <input type="text" id="titulo" class="form-control" placeholder="Ej: Cien años de soledad" required>
+                <div class="d-flex gap-3 align-items-start">
+                  <div class="portada-preview-wrap flex-shrink-0">
+                    <img id="preview-portada-img" class="portada-preview d-none" alt="Portada del libro">
+                    <div id="preview-portada-placeholder" class="portada-preview portada-placeholder">
+                      <i class="fa-solid fa-book"></i>
+                    </div>
+                    <div id="preview-portada-loading" class="portada-preview portada-placeholder d-none">
+                      <span class="spinner-border spinner-border-sm" role="status"></span>
+                    </div>
+                  </div>
+                  <input type="text" id="titulo" class="form-control" placeholder="Ej: Cien años de soledad" required>
+                </div>
               </div>
               <div class="mb-3">
                 <label for="autor" class="form-label">Autor</label>
