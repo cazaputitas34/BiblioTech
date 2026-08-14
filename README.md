@@ -27,7 +27,8 @@ Una página con encabezado, formulario para agregar libros, filtro por categorí
 
 ## Posibles mejoras futuras
 
-- [ ] Guardar los libros de forma permanente
-- [ ] Botón para eliminar o editar libros
-- [ ] Buscador por título o autor
+- [✓] Guardar los libros de forma permanente
+- [✓] Botón para eliminar o editar libros
+- [✓] Buscador por título o autor
 - [ ] Portadas de libros
+- [ ] Edicion de libros ya existentes o recien agregados
