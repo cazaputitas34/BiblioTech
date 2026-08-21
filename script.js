@@ -1,33 +1,51 @@
-// se guarda en localStorage para simular persistencia
-// mientras no exista conexión con el backend.
-const STORAGE_KEY = "biblioteca-libros";
+// biblioteca central - script.js
 
-const librosPorDefecto = [
-  { id: crypto.randomUUID(), titulo: "Cien años de soledad", autor: "Gabriel García Márquez", categoria: "Novela" },
-  { id: crypto.randomUUID(), titulo: "1984", autor: "George Orwell", categoria: "Ciencia ficción" },
-  { id: crypto.randomUUID(), titulo: "El principito", autor: "Antoine de Saint-Exupéry", categoria: "Infantil" },
-  { id: crypto.randomUUID(), titulo: "Rayuela", autor: "Julio Cortázar", categoria: "Novela" }
+var STORAGE_KEY = "biblioteca-libros";
+
+var librosPorDefecto = [
+  { id: crearId(), titulo: "Cien años de soledad", autor: "Gabriel García Márquez", categoria: "Novela", portada: null },
+  { id: crearId(), titulo: "1984", autor: "George Orwell", categoria: "Ciencia ficción", portada: null },
+  { id: crearId(), titulo: "El principito", autor: "Antoine de Saint-Exupéry", categoria: "Infantil", portada: null },
+  { id: crearId(), titulo: "Rayuela", autor: "Julio Cortázar", categoria: "Novela", portada: null }
 ];
 
-let libros = cargarLibros();
+var libros = cargarLibros();
+var portadaEncontrada = null;
+var portadaEditando = null;
+var tituloOriginalEditando = "";
+var tiempoEspera = null;
+var tiempoEsperaEditar = null;
 
-// cosas del DOM
-const lista = document.getElementById("lista-libros");
-const estadoVacio = document.getElementById("estado-vacio");
-const contador = document.getElementById("contador-libros");
-const form = document.getElementById("form-libro");
-const inputBuscar = document.getElementById("buscar");
-const filtroCategoria = document.getElementById("filtro-categoria");
-const inputTitulo = document.getElementById("titulo");
-const previewImg = document.getElementById("preview-portada-img");
-const previewPlaceholder = document.getElementById("preview-portada-placeholder");
-const previewLoading = document.getElementById("preview-portada-loading");
+var lista = document.getElementById("lista-libros");
+var estadoVacio = document.getElementById("estado-vacio");
+var contador = document.getElementById("contador-libros");
+var form = document.getElementById("form-libro");
+var inputBuscar = document.getElementById("buscar");
+var filtroCategoria = document.getElementById("filtro-categoria");
+var inputTitulo = document.getElementById("titulo");
+var previewImg = document.getElementById("preview-portada-img");
+var previewPlaceholder = document.getElementById("preview-portada-placeholder");
+var previewLoading = document.getElementById("preview-portada-loading");
 
-let portadaActual = null; // portada encontrada para el título que se está escribiendo
-let debouncePortada = null;
+var inputCodigoBarras = document.getElementById("codigo-barras");
+var btnBuscarIsbn = document.getElementById("btn-buscar-isbn");
+
+var modalEditar = new bootstrap.Modal(document.getElementById("modal-editar"));
+var formEditar = document.getElementById("form-editar");
+var editarId = document.getElementById("editar-id");
+var editarTitulo = document.getElementById("editar-titulo");
+var editarAutor = document.getElementById("editar-autor");
+var editarCategoria = document.getElementById("editar-categoria");
+var editarPreviewImg = document.getElementById("editar-preview-img");
+var editarPreviewPlaceholder = document.getElementById("editar-preview-placeholder");
+var editarPreviewLoading = document.getElementById("editar-preview-loading");
+
+function crearId() {
+  return Date.now() + "-" + Math.floor(Math.random() * 1000000);
+}
 
 function cargarLibros() {
-  const guardados = localStorage.getItem(STORAGE_KEY);
+  var guardados = localStorage.getItem(STORAGE_KEY);
   return guardados ? JSON.parse(guardados) : librosPorDefecto;
 }
 
@@ -35,155 +53,268 @@ function guardarLibros() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(libros));
 }
 
-function librosFiltrados() {
-  const categoria = filtroCategoria.value;
-  const texto = inputBuscar.value.trim().toLowerCase();
+// busca la portada del libro en Open Library y avisa el resultado con un callback
+function buscarPortada(titulo, autor, callback) {
+  if (!titulo) return callback(null);
 
-  return libros.filter(libro => {
-    const coincideCategoria = categoria === "Todas" || libro.categoria === categoria;
-    const coincideTexto =
-      libro.titulo.toLowerCase().includes(texto) ||
-      libro.autor.toLowerCase().includes(texto);
-    return coincideCategoria && coincideTexto;
-  });
+  var url = "https://openlibrary.org/search.json?title=" + encodeURIComponent(titulo) + "&limit=1";
+  if (autor) url += "&author=" + encodeURIComponent(autor);
+
+  fetch(url)
+    .then(function (r) { return r.json(); })
+    .then(function (datos) {
+      var libro = datos.docs && datos.docs[0];
+      if (libro && libro.cover_i) {
+        callback("https://covers.openlibrary.org/b/id/" + libro.cover_i + "-M.jpg");
+      } else {
+        callback(null);
+      }
+    })
+    .catch(function () { callback(null); });
 }
 
-function renderizarLibros() {
-  const filtrados = librosFiltrados();
-
-  lista.innerHTML = "";
-  estadoVacio.classList.toggle("d-none", filtrados.length > 0);
-  contador.textContent = `${libros.length} ${libros.length === 1 ? "libro" : "libros"}`;
-
-  filtrados.forEach(libro => {
-    const li = document.createElement("li");
-    li.className = "libro-item";
-
-    const portadaHtml = libro.portada
-      ? `<img class="libro-portada" src="${libro.portada}" alt="Portada de ${escapeHtml(libro.titulo)}">`
-      : `<div class="libro-portada"><i class="fa-solid fa-book"></i></div>`;
-
-    li.innerHTML = `
-      ${portadaHtml}
-      <div class="libro-info flex-grow-1">
-        <h3>${escapeHtml(libro.titulo)}</h3>
-        <p>Autor: ${escapeHtml(libro.autor)}</p>
-        <span class="etiqueta">${escapeHtml(libro.categoria)}</span>
-      </div>
-      <button class="btn-eliminar" title="Eliminar libro" data-id="${libro.id}">
-        <i class="fa-solid fa-trash"></i>
-      </button>
-    `;
-    lista.appendChild(li);
-  });
+function mostrarPreview(img, placeholder, loading, url, cargando) {
+  loading.classList.toggle("d-none", !cargando);
+  img.classList.toggle("d-none", cargando || !url);
+  placeholder.classList.toggle("d-none", cargando || !!url);
+  if (url) img.src = url;
 }
 
-// busca la portada de un libro en Open Library a partir del título (y autor, si se pasa)
-async function buscarPortada(titulo, autor) {
-  if (!titulo) return null;
+// ------------------------------
+// Buscar libro por código de barras / ISBN
+// ------------------------------
 
-  try {
-    const params = new URLSearchParams({ title: titulo, limit: 1 });
-    if (autor) params.set("author", autor);
-
-    const res = await fetch(`https://openlibrary.org/search.json?${params.toString()}`);
-    if (!res.ok) return null;
-
-    const data = await res.json();
-    const doc = data.docs && data.docs[0];
-    if (doc && doc.cover_i) {
-      return `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`;
-    }
-    return null;
-  } catch (err) {
-    console.error("Error buscando portada en Open Library:", err);
-    return null;
+// un lector físico de código de barras funciona como un teclado: escribe
+// los números muy rápido y al final manda un Enter, así que con eso alcanza
+inputCodigoBarras.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    dispararBusquedaIsbn();
   }
+});
+
+btnBuscarIsbn.addEventListener("click", function () {
+  dispararBusquedaIsbn();
+});
+
+function dispararBusquedaIsbn() {
+  var isbn = inputCodigoBarras.value.trim();
+  if (!isbn) return;
+  buscarLibroPorIsbn(isbn);
+}
+function buscarLibroPorIsbn(isbn) {
+  var url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" + isbn;
+
+  fetch(url)
+    .then(function (r) { return r.json(); })
+    .then(function (datos) {
+      if (!datos.items || datos.items.length === 0) {
+        alert("No se encontró ningún libro con ese código de barras.");
+        return;
+      }
+
+      var info = datos.items[0].volumeInfo;
+
+      inputTitulo.value = info.title || "";
+      document.getElementById("autor").value = info.authors ? info.authors.join(", ") : "";
+      document.getElementById("categoria").value = mapearCategoria(info.categories);
+
+      var urlPortada = info.imageLinks ? (info.imageLinks.thumbnail || info.imageLinks.smallThumbnail) : null;
+      if (urlPortada) {
+        urlPortada = urlPortada.replace("http://", "https://");
+        portadaEncontrada = urlPortada;
+        mostrarPreview(previewImg, previewPlaceholder, previewLoading, urlPortada, false);
+      } else {
+        // si Google Books no trae portada, probamos con Open Library
+        buscarPortada(info.title, info.authors ? info.authors[0] : null, function (urlOpenLibrary) {
+          portadaEncontrada = urlOpenLibrary;
+          mostrarPreview(previewImg, previewPlaceholder, previewLoading, urlOpenLibrary, false);
+        });
+      }
+    })
+    .catch(function () {
+      alert("Hubo un error buscando el libro. Probá de nuevo.");
+    });
 }
 
-function mostrarPreviewCargando() {
-  previewImg.classList.add("d-none");
-  previewPlaceholder.classList.add("d-none");
-  previewLoading.classList.remove("d-none");
-}
+// traduce las categorías de Google Books a las categorías de nuestro catálogo
+function mapearCategoria(categorias) {
+  if (!categorias) return "Otro";
+  var texto = categorias.join(" ").toLowerCase();
 
-function mostrarPreviewPortada(url) {
-  previewLoading.classList.add("d-none");
-  if (url) {
-    previewImg.src = url;
-    previewImg.classList.remove("d-none");
-    previewPlaceholder.classList.add("d-none");
-  } else {
-    previewImg.classList.add("d-none");
-    previewPlaceholder.classList.remove("d-none");
-  }
-}
-
-function resetPreviewPortada() {
-  previewLoading.classList.add("d-none");
-  previewImg.classList.add("d-none");
-  previewPlaceholder.classList.remove("d-none");
-  portadaActual = null;
+  if (texto.indexOf("science fiction") !== -1 || texto.indexOf("sci-fi") !== -1) return "Ciencia ficción";
+  if (texto.indexOf("juvenile") !== -1 || texto.indexOf("children") !== -1) return "Infantil";
+  if (texto.indexOf("poetry") !== -1) return "Poesía";
+  if (texto.indexOf("fiction") !== -1) return "Novela";
+  return "Otro";
 }
 
 inputTitulo.addEventListener("input", function () {
-  clearTimeout(debouncePortada);
-  const titulo = inputTitulo.value.trim();
+  clearTimeout(tiempoEspera);
+  var titulo = inputTitulo.value.trim();
 
   if (!titulo) {
-    resetPreviewPortada();
+    portadaEncontrada = null;
+    mostrarPreview(previewImg, previewPlaceholder, previewLoading, null, false);
     return;
   }
 
-  mostrarPreviewCargando();
+  mostrarPreview(previewImg, previewPlaceholder, previewLoading, null, true);
 
-  debouncePortada = setTimeout(async () => {
-    const autor = document.getElementById("autor").value.trim();
-    const url = await buscarPortada(titulo, autor);
-
-    // evita pisar el resultado si el usuario ya cambió el título mientras esperaba la respuesta
-    if (inputTitulo.value.trim() !== titulo) return;
-
-    portadaActual = url;
-    mostrarPreviewPortada(url);
+  tiempoEspera = setTimeout(function () {
+    var autor = document.getElementById("autor").value.trim();
+    buscarPortada(titulo, autor, function (url) {
+      if (inputTitulo.value.trim() !== titulo) return;
+      portadaEncontrada = url;
+      mostrarPreview(previewImg, previewPlaceholder, previewLoading, url, false);
+    });
   }, 500);
 });
 
-// previene errror en el html por agregado de caracteres especiales en el título o autor del libro
+function librosFiltrados() {
+  var categoria = filtroCategoria.value;
+  var texto = inputBuscar.value.trim().toLowerCase();
+
+  var resultado = [];
+  for (var i = 0; i < libros.length; i++) {
+    var libro = libros[i];
+    var coincideCategoria = categoria === "Todas" || libro.categoria === categoria;
+    var coincideTexto = libro.titulo.toLowerCase().indexOf(texto) !== -1 || libro.autor.toLowerCase().indexOf(texto) !== -1;
+    if (coincideCategoria && coincideTexto) resultado.push(libro);
+  }
+  return resultado;
+}
+
+function renderizarLibros() {
+  var filtrados = librosFiltrados();
+  lista.innerHTML = "";
+  estadoVacio.classList.toggle("d-none", filtrados.length > 0);
+  contador.textContent = libros.length + " " + (libros.length === 1 ? "libro" : "libros");
+
+  for (var i = 0; i < filtrados.length; i++) {
+    var libro = filtrados[i];
+    var portadaHtml = libro.portada
+      ? '<img class="libro-portada" src="' + libro.portada + '" alt="Portada">'
+      : '<div class="libro-portada"><i class="fa-solid fa-book"></i></div>';
+
+    var li = document.createElement("li");
+    li.className = "libro-item";
+    li.innerHTML =
+      portadaHtml +
+      '<div class="libro-info flex-grow-1"><h3>' + escapeHtml(libro.titulo) + "</h3>" +
+      "<p>Autor: " + escapeHtml(libro.autor) + "</p>" +
+      '<span class="etiqueta">' + escapeHtml(libro.categoria) + "</span></div>" +
+      '<button class="btn-editar" title="Editar" data-id="' + libro.id + '"><i class="fa-solid fa-pen"></i></button>' +
+      '<button class="btn-eliminar" title="Eliminar" data-id="' + libro.id + '"><i class="fa-solid fa-trash"></i></button>';
+    lista.appendChild(li);
+  }
+}
+
 function escapeHtml(texto) {
-  const div = document.createElement("div");
+  var div = document.createElement("div");
   div.textContent = texto;
   return div.innerHTML;
 }
 
 form.addEventListener("submit", function (e) {
   e.preventDefault();
-
-  const titulo = document.getElementById("titulo").value.trim();
-  const autor = document.getElementById("autor").value.trim();
-  const categoria = document.getElementById("categoria").value;
-
+  var titulo = document.getElementById("titulo").value.trim();
+  var autor = document.getElementById("autor").value.trim();
+  var categoria = document.getElementById("categoria").value;
   if (!titulo || !autor) return;
 
-  libros.push({ id: crypto.randomUUID(), titulo, autor, categoria, portada: portadaActual });
+  libros.push({ id: crearId(), titulo: titulo, autor: autor, categoria: categoria, portada: portadaEncontrada });
   guardarLibros();
   form.reset();
-  resetPreviewPortada();
+  portadaEncontrada = null;
+  mostrarPreview(previewImg, previewPlaceholder, previewLoading, null, false);
   document.getElementById("titulo").focus();
   renderizarLibros();
 });
 
-lista.addEventListener("click", function (e) {
-  const boton = e.target.closest(".btn-eliminar");
-  if (!boton) return;
+function buscarLibroPorId(id) {
+  for (var i = 0; i < libros.length; i++) {
+    if (libros[i].id === id) return libros[i];
+  }
+  return null;
+}
 
-  libros = libros.filter(libro => libro.id !== boton.dataset.id);
-  guardarLibros();
-  renderizarLibros();
+lista.addEventListener("click", function (e) {
+  var botonEliminar = e.target.closest(".btn-eliminar");
+  if (botonEliminar) {
+    libros = libros.filter(function (l) { return l.id !== botonEliminar.dataset.id; });
+    guardarLibros();
+    renderizarLibros();
+    return;
+  }
+
+  var botonEditar = e.target.closest(".btn-editar");
+  if (botonEditar) abrirModalEditar(botonEditar.dataset.id);
 });
 
 filtroCategoria.addEventListener("change", renderizarLibros);
 inputBuscar.addEventListener("input", renderizarLibros);
 
-// renderiza la lista de libros al cargar la página
+function abrirModalEditar(id) {
+  var libro = buscarLibroPorId(id);
+  if (!libro) return;
+
+  editarId.value = libro.id;
+  editarTitulo.value = libro.titulo;
+  editarAutor.value = libro.autor;
+  editarCategoria.value = libro.categoria;
+  portadaEditando = libro.portada;
+  tituloOriginalEditando = libro.titulo;
+  mostrarPreview(editarPreviewImg, editarPreviewPlaceholder, editarPreviewLoading, portadaEditando, false);
+  modalEditar.show();
+}
+
+editarTitulo.addEventListener("input", function () {
+  clearTimeout(tiempoEsperaEditar);
+  var titulo = editarTitulo.value.trim();
+
+  if (!titulo) {
+    portadaEditando = null;
+    mostrarPreview(editarPreviewImg, editarPreviewPlaceholder, editarPreviewLoading, null, false);
+    return;
+  }
+
+  if (titulo === tituloOriginalEditando) {
+    var libroActual = buscarLibroPorId(editarId.value);
+    portadaEditando = libroActual ? libroActual.portada : null;
+    mostrarPreview(editarPreviewImg, editarPreviewPlaceholder, editarPreviewLoading, portadaEditando, false);
+    return;
+  }
+
+  mostrarPreview(editarPreviewImg, editarPreviewPlaceholder, editarPreviewLoading, null, true);
+
+  tiempoEsperaEditar = setTimeout(function () {
+    var autor = editarAutor.value.trim();
+    buscarPortada(titulo, autor, function (url) {
+      if (editarTitulo.value.trim() !== titulo) return;
+      portadaEditando = url;
+      mostrarPreview(editarPreviewImg, editarPreviewPlaceholder, editarPreviewLoading, url, false);
+    });
+  }, 500);
+});
+
+formEditar.addEventListener("submit", function (e) {
+  e.preventDefault();
+  var titulo = editarTitulo.value.trim();
+  var autor = editarAutor.value.trim();
+  if (!titulo || !autor) return;
+
+  var libro = buscarLibroPorId(editarId.value);
+  if (!libro) return;
+
+  libro.titulo = titulo;
+  libro.autor = autor;
+  libro.categoria = editarCategoria.value;
+  libro.portada = portadaEditando;
+
+  guardarLibros();
+  renderizarLibros();
+  modalEditar.hide();
+});
+
 renderizarLibros();

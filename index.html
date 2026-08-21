@@ -9,7 +9,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
-  <!-- Tipografías2  -->
+  <!-- Tipografías -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
@@ -48,6 +48,14 @@
                     </div>
                   </div>
                   <input type="text" id="titulo" class="form-control" placeholder="Ej: Cien años de soledad" required>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="codigo-barras" class="form-label">Código de barras / ISBN</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-white"><i class="fa-solid fa-barcode"></i></span>
+                  <input type="text" id="codigo-barras" class="form-control" placeholder="Escaneá o escribí el ISBN">
+                  <button type="button" id="btn-buscar-isbn" class="btn btn-outline-secondary">Buscar</button>
                 </div>
               </div>
               <div class="mb-3">
@@ -118,6 +126,58 @@
   <footer class="site-footer text-center py-4">
     <p class="mb-0">&copy; 2026 Biblioteca Central · San José</p>
   </footer>
+
+  <!-- Modal editar libro -->
+  <div class="modal fade" id="modal-editar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="form-editar">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fa-solid fa-pen me-2"></i>Editar libro</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="editar-id">
+            <div class="mb-3">
+              <label for="editar-titulo" class="form-label">Título</label>
+              <div class="d-flex gap-3 align-items-start">
+                <div class="portada-preview-wrap flex-shrink-0">
+                  <img id="editar-preview-img" class="portada-preview d-none" alt="Portada del libro">
+                  <div id="editar-preview-placeholder" class="portada-preview portada-placeholder">
+                    <i class="fa-solid fa-book"></i>
+                  </div>
+                  <div id="editar-preview-loading" class="portada-preview portada-placeholder d-none">
+                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                  </div>
+                </div>
+                <input type="text" id="editar-titulo" class="form-control" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="editar-autor" class="form-label">Autor</label>
+              <input type="text" id="editar-autor" class="form-control" required>
+            </div>
+            <div class="mb-2">
+              <label for="editar-categoria" class="form-label">Categoría</label>
+              <select id="editar-categoria" class="form-select">
+                <option value="Novela">Novela</option>
+                <option value="Ciencia ficción">Ciencia ficción</option>
+                <option value="Infantil">Infantil</option>
+                <option value="Poesía">Poesía</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-brand">
+              <i class="fa-solid fa-check me-2"></i>Guardar cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
   <script src="script.js"></script>

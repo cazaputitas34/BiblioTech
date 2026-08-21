@@ -180,6 +180,20 @@ h1, h2, h3, .panel-title {
   letter-spacing: 0.3px;
 }
 
+.btn-editar {
+  border: none;
+  background: transparent;
+  color: var(--brand);
+  font-size: 1rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+}
+
+.btn-editar:hover {
+  background-color: #f1e6d5;
+}
+
 .btn-eliminar {
   border: none;
   background: transparent;
