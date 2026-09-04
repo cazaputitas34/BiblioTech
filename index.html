@@ -11,26 +11,103 @@
 
   <!-- Tipografías -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+  <!-- barra superior: bienvenida + acceso a cuenta -->
+  <div class="topbar">
+    <div class="container d-flex justify-content-between align-items-center py-2">
+      <span id="topbar-bienvenida">Bienvenido a Biblioteca Central</span>
+      <div class="d-flex align-items-center gap-2" id="topbar-auth-invitado">
+        <a href="#" class="topbar-link" id="topbar-btn-login">Iniciar sesión</a>
+        <span class="topbar-divider">|</span>
+        <a href="#" class="topbar-link" id="topbar-btn-registro">Crear una cuenta</a>
+      </div>
+      <div class="d-flex align-items-center gap-2 d-none" id="topbar-auth-sesion">
+        <span id="topbar-usuario-nombre"></span>
+        <span class="topbar-divider">|</span>
+        <a href="#" class="topbar-link" id="topbar-btn-logout">Cerrar sesión</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- header principal: logo a la izquierda, acciones a la derecha -->
   <header class="site-header">
-    <div class="container py-5 text-center">
-      <i class="fa-solid fa-book-bookmark header-icon mb-3"></i>
-      <h1 class="mb-1">Biblioteca Central</h1>
-      <p class="header-sub mb-0">San José · Catálogo de libros</p>
+    <div class="container py-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+      <div class="brand-logo">
+        <div class="brand-logo-icon"><img src="/images/logo.png" alt="Logo de la Biblioteca" width="55" height="55"></div>
+        <div>
+          <h1>Biblioteca Central</h1>
+          <p class="header-sub">San José · Catálogo de libros</p>
+        </div>
+      </div>
+
+      <div class="header-actions" id="header-auth-invitado">
+        <a href="#" class="btn-header btn-header-text" id="header-btn-login"><i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesión</a>
+        <a href="#" class="btn-header btn-header-solid btn-header-text" id="header-btn-registro"><i class="fa-solid fa-user-plus me-2"></i>Crear cuenta</a>
+        <button type="button" class="header-icon-btn" title="Libros en catálogo">
+          <i class="fa-solid fa-book"></i>
+          <span class="header-icon-badge" id="contador-libros-header">0</span>
+        </button>
+      </div>
+      <div class="header-actions d-none" id="header-auth-sesion">
+        <span class="btn-header-text text-white" id="header-usuario-nombre"></span>
+        <a href="#" class="btn-header btn-header-text" id="header-btn-logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar sesión</a>
+        <button type="button" class="header-icon-btn" title="Mi cuenta" id="header-btn-mi-cuenta">
+          <i class="fa-solid fa-user"></i>
+        </button>
+        <button type="button" class="header-icon-btn" title="Libros en catálogo">
+          <i class="fa-solid fa-book"></i>
+          <span class="header-icon-badge" id="contador-libros-header-sesion">0</span>
+        </button>
+      </div>
     </div>
   </header>
 
+  <!-- menu de secciones, estilo categorías de tienda -->
+  <nav class="nav-categorias-wrap">
+    <div class="container">
+      <ul class="nav tabs-biblioteca" id="nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="tab-btn-catalogo" data-bs-toggle="pill" data-bs-target="#tab-catalogo" type="button" role="tab">
+            <i class="fa-solid fa-book me-2"></i>Catálogo
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-btn-contabilidad" data-bs-toggle="pill" data-bs-target="#tab-contabilidad" type="button" role="tab">
+            <i class="fa-solid fa-clipboard-list me-2"></i>Contabilidad
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-btn-socios" data-bs-toggle="pill" data-bs-target="#tab-socios" type="button" role="tab">
+            <i class="fa-solid fa-users me-2"></i>Socios
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-btn-multas" data-bs-toggle="pill" data-bs-target="#tab-multas" type="button" role="tab">
+            <i class="fa-solid fa-money-bill-wave me-2"></i>Multas
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-btn-reportes" data-bs-toggle="pill" data-bs-target="#tab-reportes" type="button" role="tab">
+            <i class="fa-solid fa-chart-line me-2"></i>Reportes
+          </button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
   <main class="container my-5">
 
+    <div class="tab-content">
+    <div class="tab-pane fade show active" id="tab-catalogo" role="tabpanel">
     <div class="row g-4">
 
       <!-- Agregar libro -->
-      <div class="col-lg-5">
+      <div class="col-lg-4">
         <section class="card panel h-100">
           <div class="card-body p-4">
             <h2 class="panel-title"><i class="fa-solid fa-plus me-2"></i>Agregar un libro</h2>
@@ -57,6 +134,12 @@
                   <input type="text" id="codigo-barras" class="form-control" placeholder="Escaneá o escribí el ISBN">
                   <button type="button" id="btn-buscar-isbn" class="btn btn-outline-secondary">Buscar</button>
                 </div>
+                <div class="form-text">Se guarda junto con el libro para poder identificarlo después.</div>
+              </div>
+              <div class="mb-3">
+                <label for="imagen-local" class="form-label">Imagen de portada (opcional)</label>
+                <input type="file" id="imagen-local" class="form-control" accept="image/*">
+                <div class="form-text">Si no subís una imagen, se busca una automáticamente por título/autor o código de barras.</div>
               </div>
               <div class="mb-3">
                 <label for="autor" class="form-label">Autor</label>
@@ -72,6 +155,11 @@
                   <option value="Otro">Otro</option>
                 </select>
               </div>
+              <div class="mb-4 d-none" id="grupo-nueva-categoria">
+                <label for="nueva-categoria" class="form-label">Nueva categoría</label>
+                <input type="text" id="nueva-categoria" class="form-control" placeholder="Ej: Ensayo">
+                <div class="form-text">Si ya existe una categoría con ese nombre, se usa la existente en vez de crear una nueva.</div>
+              </div>
               <button type="submit" class="btn btn-brand w-100">
                 <i class="fa-solid fa-book-medical me-2"></i>Agregar libro
               </button>
@@ -81,7 +169,7 @@
       </div>
 
       <!-- Listado -->
-      <div class="col-lg-7">
+      <div class="col-lg-8">
         <section class="card panel h-100">
           <div class="card-body p-4">
 
@@ -121,6 +209,178 @@
       </div>
 
     </div>
+    </div>
+
+    <!-- Contabilidad: reservas activas + historial de préstamos -->
+    <div class="tab-pane fade" id="tab-contabilidad" role="tabpanel">
+
+      <section class="card panel mb-4">
+        <div class="card-body p-4">
+          <h2 class="panel-title mb-3"><i class="fa-solid fa-bookmark me-2"></i>Reservas activas</h2>
+          <ul class="list-unstyled lista-reservas" id="lista-reservas"></ul>
+          <div id="estado-vacio-reservas" class="text-center text-muted py-4 d-none">
+            <p class="mb-0">No hay reservas activas.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card panel">
+        <div class="card-body p-4">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <h2 class="panel-title mb-0"><i class="fa-solid fa-right-left me-2"></i>Préstamos y devoluciones</h2>
+            <select id="filtro-prestamos" class="form-select w-auto">
+              <option value="Todos">Todos</option>
+              <option value="En curso">En curso</option>
+              <option value="Devueltos">Devueltos</option>
+            </select>
+          </div>
+          <ul class="list-unstyled lista-prestamos" id="lista-prestamos"></ul>
+          <div id="estado-vacio-prestamos" class="text-center text-muted py-4 d-none">
+            <p class="mb-0">No hay préstamos que coincidan.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Socios -->
+    <div class="tab-pane fade" id="tab-socios" role="tabpanel">
+      <div class="row g-4">
+
+        <div class="col-lg-5">
+          <section class="card panel h-100">
+            <div class="card-body p-4">
+              <h2 class="panel-title"><i class="fa-solid fa-user-plus me-2"></i>Registrar socio</h2>
+              <form id="form-socio" class="mt-3" novalidate>
+                <div class="mb-3">
+                  <label for="socio-nombre" class="form-label">Nombre</label>
+                  <input type="text" id="socio-nombre" class="form-control" placeholder="Nombre y apellido" required>
+                </div>
+                <div class="mb-4">
+                  <label for="socio-tipo" class="form-label">Tipo de usuario</label>
+                  <select id="socio-tipo" class="form-select">
+                    <option value="Particular">Particular</option>
+                    <option value="Centro educativo">Centro educativo</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-brand w-100">
+                  <i class="fa-solid fa-user-plus me-2"></i>Registrar socio
+                </button>
+              </form>
+            </div>
+          </section>
+        </div>
+
+        <div class="col-lg-7">
+          <section class="card panel h-100">
+            <div class="card-body p-4">
+              <h2 class="panel-title mb-3"><i class="fa-solid fa-users me-2"></i>Socios registrados</h2>
+              <ul class="list-unstyled lista-reservas" id="lista-socios"></ul>
+              <div id="estado-vacio-socios" class="text-center text-muted py-5 d-none">
+                <i class="fa-solid fa-users fa-2x mb-3"></i>
+                <p class="mb-0">Todavía no hay socios registrados.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+      </div>
+
+      <datalist id="datalist-socios"></datalist>
+    </div>
+
+    <!-- Multas -->
+    <div class="tab-pane fade" id="tab-multas" role="tabpanel">
+      <div class="row g-4">
+
+        <div class="col-lg-5">
+          <section class="card panel h-100">
+            <div class="card-body p-4">
+              <h2 class="panel-title"><i class="fa-solid fa-circle-dollar-to-slot me-2"></i>Registrar multa</h2>
+              <form id="form-multa" class="mt-3" novalidate>
+                <div class="mb-3">
+                  <label for="multa-socio" class="form-label">Socio</label>
+                  <input type="text" id="multa-socio" class="form-control" list="datalist-socios" placeholder="Nombre del socio" required>
+                </div>
+                <div class="mb-3">
+                  <label for="multa-motivo" class="form-label">Motivo</label>
+                  <select id="multa-motivo" class="form-select">
+                    <option value="Atraso en devolución">Atraso en devolución</option>
+                    <option value="Libro perdido">Libro perdido</option>
+                    <option value="Libro deteriorado">Libro deteriorado</option>
+                  </select>
+                </div>
+                <div class="mb-4">
+                  <label for="multa-monto" class="form-label">Monto ($)</label>
+                  <input type="number" id="multa-monto" class="form-control" min="0" step="1" placeholder="0" required>
+                </div>
+                <button type="submit" class="btn btn-brand w-100">
+                  <i class="fa-solid fa-circle-dollar-to-slot me-2"></i>Registrar multa
+                </button>
+              </form>
+            </div>
+          </section>
+        </div>
+
+        <div class="col-lg-7">
+          <section class="card panel h-100">
+            <div class="card-body p-4">
+              <h2 class="panel-title mb-3"><i class="fa-solid fa-file-invoice-dollar me-2"></i>Multas registradas</h2>
+              <ul class="list-unstyled lista-reservas" id="lista-multas"></ul>
+              <div id="estado-vacio-multas" class="text-center text-muted py-5 d-none">
+                <i class="fa-solid fa-circle-check fa-2x mb-3"></i>
+                <p class="mb-0">No hay multas registradas.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Reportes -->
+    <div class="tab-pane fade" id="tab-reportes" role="tabpanel">
+
+      <div class="row g-3 mb-4" id="reportes-stats"></div>
+
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <section class="card panel h-100">
+            <div class="card-body p-4">
+              <h2 class="panel-title mb-3"><i class="fa-solid fa-ranking-star me-2"></i>Libros más prestados</h2>
+              <ul class="list-unstyled lista-reservas" id="lista-top-libros"></ul>
+              <div id="estado-vacio-top" class="text-center text-muted py-4 d-none">
+                <p class="mb-0">Todavía no hay préstamos registrados.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="col-lg-6">
+          <section class="card panel h-100">
+            <div class="card-body p-4">
+              <h2 class="panel-title mb-3"><i class="fa-solid fa-triangle-exclamation me-2"></i>Préstamos atrasados</h2>
+              <ul class="list-unstyled lista-reservas" id="lista-notificaciones"></ul>
+              <div id="estado-vacio-notificaciones" class="text-center text-muted py-4 d-none">
+                <p class="mb-0">No hay préstamos atrasados.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <section class="card panel mt-4">
+        <div class="card-body p-4">
+          <h2 class="panel-title mb-3"><i class="fa-solid fa-clock-rotate-left me-2"></i>Historial de actividad</h2>
+          <ul class="list-unstyled lista-reservas" id="lista-historial"></ul>
+          <div id="estado-vacio-historial" class="text-center text-muted py-4 d-none">
+            <p class="mb-0">Todavía no hay actividad registrada.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
   </main>
 
   <footer class="site-footer text-center py-4">
@@ -157,6 +417,14 @@
               <label for="editar-autor" class="form-label">Autor</label>
               <input type="text" id="editar-autor" class="form-control" required>
             </div>
+            <div class="mb-3">
+              <label for="editar-codigo-barras" class="form-label">Código de barras / ISBN</label>
+              <input type="text" id="editar-codigo-barras" class="form-control" placeholder="Escaneá o escribí el ISBN">
+            </div>
+            <div class="mb-3">
+              <label for="editar-imagen-local" class="form-label">Imagen de portada (opcional)</label>
+              <input type="file" id="editar-imagen-local" class="form-control" accept="image/*">
+            </div>
             <div class="mb-2">
               <label for="editar-categoria" class="form-label">Categoría</label>
               <select id="editar-categoria" class="form-select">
@@ -167,11 +435,159 @@
                 <option value="Otro">Otro</option>
               </select>
             </div>
+            <div class="mb-2 d-none" id="grupo-editar-nueva-categoria">
+              <label for="editar-nueva-categoria" class="form-label">Nueva categoría</label>
+              <input type="text" id="editar-nueva-categoria" class="form-control" placeholder="Ej: Ensayo">
+              <div class="form-text">Si ya existe una categoría con ese nombre, se usa la existente en vez de crear una nueva.</div>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
             <button type="submit" class="btn btn-brand">
               <i class="fa-solid fa-check me-2"></i>Guardar cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal reservar libro -->
+  <div class="modal fade" id="modal-reservar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="form-reservar">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fa-solid fa-bookmark me-2"></i>Reservar libro</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="reservar-libro-id">
+            <p class="mb-3">Libro: <strong id="reservar-libro-titulo"></strong></p>
+            <div class="mb-3">
+              <label for="reservar-nombre" class="form-label">Nombre del solicitante</label>
+              <input type="text" id="reservar-nombre" class="form-control" required>
+            </div>
+            <div class="mb-2">
+              <label for="reservar-tipo" class="form-label">Tipo de usuario</label>
+              <select id="reservar-tipo" class="form-select">
+                <option value="Particular">Particular</option>
+                <option value="Centro educativo">Centro educativo</option>
+              </select>
+              <div class="form-text">Los usuarios particulares solo pueden tener 1 reserva activa a la vez. Los centros educativos pueden reservar varios libros.</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-brand">
+              <i class="fa-solid fa-check me-2"></i>Confirmar reserva
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal prestar libro -->
+  <div class="modal fade" id="modal-prestar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="form-prestar">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fa-solid fa-right-from-bracket me-2"></i>Prestar libro</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="prestar-libro-id">
+            <p class="mb-3">Libro: <strong id="prestar-libro-titulo"></strong></p>
+            <div class="mb-2">
+              <label for="prestar-nombre" class="form-label">Nombre de quien retira</label>
+              <input type="text" id="prestar-nombre" class="form-control" required>
+            </div>
+            <p class="text-muted small mb-0">Fecha de préstamo: <span id="prestar-fecha-hoy"></span></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-brand">
+              <i class="fa-solid fa-check me-2"></i>Confirmar préstamo
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal iniciar sesión -->
+  <div class="modal fade" id="modal-login" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="form-login">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesión</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div id="login-error" class="alert alert-danger py-2 d-none" role="alert"></div>
+            <div class="mb-3">
+              <label for="login-email" class="form-label">Correo electrónico</label>
+              <input type="email" id="login-email" class="form-control" placeholder="tu@correo.com" required>
+            </div>
+            <div class="mb-2">
+              <label for="login-password" class="form-label">Contraseña</label>
+              <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+            </div>
+            <p class="mb-0 mt-3 small text-muted">
+              ¿No tenés cuenta?
+              <a href="#" id="link-ir-a-registro">Creá una acá</a>.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-brand">
+              <i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesión
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal crear cuenta -->
+  <div class="modal fade" id="modal-registro" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="form-registro">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fa-solid fa-user-plus me-2"></i>Crear cuenta</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div id="registro-error" class="alert alert-danger py-2 d-none" role="alert"></div>
+            <div class="mb-3">
+              <label for="registro-nombre" class="form-label">Nombre</label>
+              <input type="text" id="registro-nombre" class="form-control" placeholder="Nombre y apellido" required>
+            </div>
+            <div class="mb-3">
+              <label for="registro-email" class="form-label">Correo electrónico</label>
+              <input type="email" id="registro-email" class="form-control" placeholder="tu@correo.com" required>
+            </div>
+            <div class="mb-3">
+              <label for="registro-password" class="form-label">Contraseña</label>
+              <input type="password" id="registro-password" class="form-control" placeholder="Mínimo 6 caracteres" minlength="6" required>
+            </div>
+            <div class="mb-2">
+              <label for="registro-password-confirmar" class="form-label">Confirmar contraseña</label>
+              <input type="password" id="registro-password-confirmar" class="form-control" placeholder="Repetí la contraseña" minlength="6" required>
+            </div>
+            <p class="mb-0 mt-3 small text-muted">
+              ¿Ya tenés cuenta?
+              <a href="#" id="link-ir-a-login">Iniciá sesión</a>.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-brand">
+              <i class="fa-solid fa-user-plus me-2"></i>Crear cuenta
             </button>
           </div>
         </form>
