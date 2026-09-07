@@ -35,26 +35,6 @@ a {
    HEADER
    ========================================================== */
 
-/* barra superior fina: bienvenida + acceso */
-.topbar {
-  background: var(--brand-dark);
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.82rem;
-}
-
-.topbar-link {
-  color: rgba(255, 255, 255, 0.85);
-  transition: color 0.15s ease;
-}
-
-.topbar-link:hover {
-  color: #fff;
-}
-
-.topbar .topbar-divider {
-  color: rgba(255, 255, 255, 0.35);
-}
-
 /* barra principal: logo + acciones */
 .site-header {
   background: linear-gradient(160deg, var(--brand) 0%, var(--brand-dark) 100%);
@@ -172,37 +152,44 @@ a {
   padding: 0 4px;
 }
 
-/* menu de navegacion (tabs) estilo categorías de tienda */
-.nav-categorias-wrap {
-  background: var(--brand-dark);
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+/* botón de 3 barritas del header que abre las opciones de cuenta */
+.header-account-dropdown .header-icon-btn::after {
+  display: none;
 }
 
-.tabs-biblioteca {
-  border: none;
-  flex-wrap: nowrap;
-  overflow-x: auto;
+.header-account-menu {
+  min-width: 210px;
+  padding: 8px;
+  margin-top: 10px !important;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 14px 30px rgba(163, 64, 15, 0.18);
 }
 
-.tabs-biblioteca .nav-link {
-  color: rgba(255, 255, 255, 0.85);
+.header-account-menu .dropdown-item {
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
   font-weight: 600;
-  font-size: 0.92rem;
-  border-radius: 0;
-  padding: 0.85rem 1.1rem;
-  white-space: nowrap;
-  border-bottom: 3px solid transparent;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  font-size: 0.9rem;
+  color: var(--ink);
 }
 
-.tabs-biblioteca .nav-link:hover {
-  color: #fff;
+.header-account-menu .dropdown-item:hover,
+.header-account-menu .dropdown-item:focus {
+  background-color: var(--cream);
+  color: var(--brand-dark);
 }
 
-.tabs-biblioteca .nav-link.active {
-  background-color: transparent;
-  color: #fff;
-  border-bottom: 3px solid var(--brand-gold);
+.header-account-menu .dropdown-item i {
+  color: var(--brand);
+  width: 18px;
+}
+
+.header-usuario-nombre-item {
+  display: block;
+  padding: 0.4rem 0.75rem;
+  font-weight: 700;
+  color: var(--brand-dark);
 }
 
 /* ==========================================================
@@ -436,6 +423,174 @@ a {
 }
 
 /* ==========================================================
+   MENÚ OFFCANVAS (3 barritas), estilo Epic Games Store
+   ========================================================== */
+
+.menu-offcanvas {
+  width: 320px;
+  background-color: var(--cream) !important;
+  border-left: 1px solid var(--border);
+}
+
+.menu-offcanvas .offcanvas-header {
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.menu-offcanvas-brand {
+  font-family: 'Newsreader', serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--brand-dark);
+  letter-spacing: 0.2px;
+}
+
+.menu-offcanvas-brand i {
+  color: var(--brand);
+}
+
+/* botón de cerrar (X) propio, más visible que el default de Bootstrap */
+.menu-offcanvas-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--cream-card);
+  color: var(--brand-dark);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.menu-offcanvas-close:hover {
+  background-color: var(--brand);
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+/* animación de apertura del panel: además del slide de Bootstrap, hace un
+   pequeño "settle" y el contenido aparece con fade + leve desplazamiento */
+.menu-offcanvas.offcanvas-end {
+  transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.4, 1);
+}
+
+.menu-offcanvas .offcanvas-body > * {
+  animation: menuContenidoAparece 0.4s ease both;
+  animation-delay: 0.08s;
+}
+
+@keyframes menuContenidoAparece {
+  from { opacity: 0; transform: translateX(14px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.menu-offcanvas .offcanvas-body {
+  padding: 1.4rem 1.25rem 1.75rem;
+}
+
+/* bloque de cuenta: botones tipo "Install / Sign in" */
+.menu-auth-block {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 0.5rem;
+}
+
+.btn-menu-cuenta {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background: var(--cream-card);
+  color: var(--brand-dark);
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  transition: background-color 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-menu-cuenta:hover {
+  background-color: var(--cream);
+  color: var(--brand-dark);
+}
+
+.btn-menu-cuenta-solid {
+  background-color: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.btn-menu-cuenta-solid:hover {
+  background-color: var(--brand-dark);
+  border-color: var(--brand-dark);
+  color: #fff;
+}
+
+.menu-usuario-nombre {
+  color: var(--brand-dark);
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0 0 0.75rem 0;
+}
+
+.menu-offcanvas-divider {
+  border-color: var(--border);
+  margin: 1.4rem 0 1.1rem 0;
+}
+
+/* título "Menú" grande, estilo Epic Games */
+.menu-section-label {
+  font-family: 'Newsreader', serif;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--brand-dark);
+  margin: 0 0 1rem 0;
+}
+
+/* lista de secciones, simple y vertical */
+.menu-nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.menu-nav-link {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 0.75rem 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.menu-nav-link:hover {
+  background-color: var(--cream-card);
+  color: var(--brand-dark);
+}
+
+.menu-nav-link.active {
+  color: var(--brand-dark);
+  background-color: #f1e0cc;
+}
+
+.menu-nav-link i {
+  color: var(--brand);
+  width: 20px;
+}
+
+/* ==========================================================
    FOOTER
    ========================================================== */
 
@@ -568,10 +723,60 @@ a {
 }
 
 @media (max-width: 767px) {
-  .header-actions .btn-header-text {
-    display: none;
-  }
   .lista-libros {
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   }
+}
+
+/* en tablet/celular grande: botones más compactos pero con texto visible */
+@media (max-width: 767.98px) {
+  .header-actions {
+    gap: 8px;
+  }
+  .btn-header {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* en celular chico: login/registro pasan a botones circulares (solo ícono) para que entren en la fila */
+@media (max-width: 479.98px) {
+  .btn-header {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-header .fa-solid {
+    margin: 0 !important;
+    font-size: 1.05rem;
+  }
+  .btn-header-label {
+    display: none;
+  }
+  .header-actions {
+    gap: 6px;
+  }
+}
+/* ==========================================================
+   ANIMACIÓN DE APERTURA DE MODALES
+   ========================================================== */
+
+.modal.fade .modal-dialog {
+  transform: scale(0.92) translateY(10px);
+  opacity: 0;
+  transition: transform 0.28s cubic-bezier(0.25, 0.8, 0.4, 1), opacity 0.22s ease;
+}
+
+.modal.show .modal-dialog {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* atenúa el fondo con un poco más de suavidad */
+.modal-backdrop.fade {
+  transition: opacity 0.25s ease;
 }

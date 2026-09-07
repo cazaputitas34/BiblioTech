@@ -126,13 +126,6 @@ var registroPassword = document.getElementById("registro-password");
 var registroPasswordConfirmar = document.getElementById("registro-password-confirmar");
 var registroError = document.getElementById("registro-error");
 
-var topbarBtnLogin = document.getElementById("topbar-btn-login");
-var topbarBtnRegistro = document.getElementById("topbar-btn-registro");
-var topbarBtnLogout = document.getElementById("topbar-btn-logout");
-var topbarAuthInvitado = document.getElementById("topbar-auth-invitado");
-var topbarAuthSesion = document.getElementById("topbar-auth-sesion");
-var topbarUsuarioNombre = document.getElementById("topbar-usuario-nombre");
-
 var headerBtnLogin = document.getElementById("header-btn-login");
 var headerBtnRegistro = document.getElementById("header-btn-registro");
 var headerBtnLogout = document.getElementById("header-btn-logout");
@@ -491,7 +484,7 @@ function renderizarReportes() {
   renderizarHistorial();
 }
 
-var tabBtnReportes = document.getElementById("tab-btn-reportes");
+var tabBtnReportes = document.getElementById("menu-tab-btn-reportes");
 if (tabBtnReportes) tabBtnReportes.addEventListener("shown.bs.tab", renderizarReportes);
 
 // ------------------------------
@@ -1218,17 +1211,14 @@ function abrirModalRegistro() {
   modalRegistro.show();
 }
 
-// refleja el estado de la sesión (invitado o con usuario) en la topbar y el header
+// refleja el estado de la sesión (invitado o con usuario) en el header
 function actualizarUIAuth() {
   var haySesion = !!sesionActual;
 
-  topbarAuthInvitado.classList.toggle("d-none", haySesion);
-  topbarAuthSesion.classList.toggle("d-none", !haySesion);
   headerAuthInvitado.classList.toggle("d-none", haySesion);
   headerAuthSesion.classList.toggle("d-none", !haySesion);
 
   if (haySesion) {
-    topbarUsuarioNombre.textContent = "Hola, " + sesionActual.nombre;
     headerUsuarioNombre.textContent = sesionActual.nombre;
   }
 }
@@ -1299,16 +1289,27 @@ function cerrarSesion() {
   actualizarUIAuth();
 }
 
-topbarBtnLogin.addEventListener("click", function (e) { e.preventDefault(); abrirModalLogin(); });
-topbarBtnRegistro.addEventListener("click", function (e) { e.preventDefault(); abrirModalRegistro(); });
-topbarBtnLogout.addEventListener("click", function (e) { e.preventDefault(); cerrarSesion(); });
-
 headerBtnLogin.addEventListener("click", function (e) { e.preventDefault(); abrirModalLogin(); });
 headerBtnRegistro.addEventListener("click", function (e) { e.preventDefault(); abrirModalRegistro(); });
 headerBtnLogout.addEventListener("click", function (e) { e.preventDefault(); cerrarSesion(); });
 
 linkIrARegistro.addEventListener("click", function (e) { e.preventDefault(); abrirModalRegistro(); });
 linkIrALogin.addEventListener("click", function (e) { e.preventDefault(); abrirModalLogin(); });
+
+// menú de secciones en móvil: al elegir una pestaña, se actualiza el texto
+// del botón hamburguesa y se cierra el menú desplegado
+var navTabsCollapseEl = document.getElementById("nav-tabs-collapse");
+var navbarTogglerTexto = document.getElementById("navbar-toggler-texto");
+if (navTabsCollapseEl && navbarTogglerTexto) {
+  var navTabsCollapse = new bootstrap.Collapse(navTabsCollapseEl, { toggle: false });
+  var botonesTab = document.querySelectorAll("#nav-tabs .nav-link");
+  for (var bt = 0; bt < botonesTab.length; bt++) {
+    botonesTab[bt].addEventListener("click", function () {
+      navbarTogglerTexto.textContent = this.textContent.trim();
+      navTabsCollapse.hide();
+    });
+  }
+}
 
 actualizarSelectsCategoria();
 renderizarLibros();

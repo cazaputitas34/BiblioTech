@@ -17,23 +17,6 @@
 </head>
 <body>
 
-  <!-- barra superior: bienvenida + acceso a cuenta -->
-  <div class="topbar">
-    <div class="container d-flex justify-content-between align-items-center py-2">
-      <span id="topbar-bienvenida">Bienvenido a Biblioteca Central</span>
-      <div class="d-flex align-items-center gap-2" id="topbar-auth-invitado">
-        <a href="#" class="topbar-link" id="topbar-btn-login">Iniciar sesión</a>
-        <span class="topbar-divider">|</span>
-        <a href="#" class="topbar-link" id="topbar-btn-registro">Crear una cuenta</a>
-      </div>
-      <div class="d-flex align-items-center gap-2 d-none" id="topbar-auth-sesion">
-        <span id="topbar-usuario-nombre"></span>
-        <span class="topbar-divider">|</span>
-        <a href="#" class="topbar-link" id="topbar-btn-logout">Cerrar sesión</a>
-      </div>
-    </div>
-  </div>
-
   <!-- header principal: logo a la izquierda, acciones a la derecha -->
   <header class="site-header">
     <div class="container py-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
@@ -46,59 +29,83 @@
       </div>
 
       <div class="header-actions" id="header-auth-invitado">
-        <a href="#" class="btn-header btn-header-text" id="header-btn-login"><i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesión</a>
-        <a href="#" class="btn-header btn-header-solid btn-header-text" id="header-btn-registro"><i class="fa-solid fa-user-plus me-2"></i>Crear cuenta</a>
         <button type="button" class="header-icon-btn" title="Libros en catálogo">
           <i class="fa-solid fa-book"></i>
           <span class="header-icon-badge" id="contador-libros-header">0</span>
         </button>
+        <button type="button" class="header-icon-btn header-btn-menu-toggle" id="header-btn-menu-cuenta" data-bs-toggle="offcanvas" data-bs-target="#menu-offcanvas" aria-controls="menu-offcanvas" title="Menú">
+          <i class="fa-solid fa-bars"></i>
+        </button>
       </div>
       <div class="header-actions d-none" id="header-auth-sesion">
-        <span class="btn-header-text text-white" id="header-usuario-nombre"></span>
-        <a href="#" class="btn-header btn-header-text" id="header-btn-logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar sesión</a>
-        <button type="button" class="header-icon-btn" title="Mi cuenta" id="header-btn-mi-cuenta">
-          <i class="fa-solid fa-user"></i>
-        </button>
         <button type="button" class="header-icon-btn" title="Libros en catálogo">
           <i class="fa-solid fa-book"></i>
           <span class="header-icon-badge" id="contador-libros-header-sesion">0</span>
+        </button>
+        <button type="button" class="header-icon-btn header-btn-menu-toggle" id="header-btn-menu-sesion" data-bs-toggle="offcanvas" data-bs-target="#menu-offcanvas" aria-controls="menu-offcanvas" title="Menú">
+          <i class="fa-solid fa-bars"></i>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- menu de secciones, estilo categorías de tienda -->
-  <nav class="nav-categorias-wrap">
-    <div class="container">
-      <ul class="nav tabs-biblioteca" id="nav-tabs" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="tab-btn-catalogo" data-bs-toggle="pill" data-bs-target="#tab-catalogo" type="button" role="tab">
+  <!-- (la barra de categorías de escritorio se quitó: el menú de 3 barritas ya cubre esa navegación en todos los tamaños) -->
+
+  <!-- menú de 3 barritas: agrupa cuenta (iniciar sesión / cerrar sesión) y secciones, estilo Epic Games Store -->
+  <div class="offcanvas offcanvas-end menu-offcanvas" tabindex="-1" id="menu-offcanvas" aria-labelledby="menu-offcanvas-label">
+    <div class="offcanvas-header">
+      <span class="menu-offcanvas-brand"><i class="fa-solid fa-book-open me-2"></i>Biblioteca Central</span>
+      <button type="button" class="menu-offcanvas-close" data-bs-dismiss="offcanvas" aria-label="Cerrar">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column">
+
+      <!-- bloque de cuenta: invitado -->
+      <div class="menu-auth-block" id="menu-auth-invitado">
+        <a href="#" class="btn btn-menu-cuenta" id="header-btn-login" data-bs-dismiss="offcanvas"><i class="fa-solid fa-right-to-bracket me-2"></i>Iniciar sesión</a>
+        <a href="#" class="btn btn-menu-cuenta btn-menu-cuenta-solid" id="header-btn-registro" data-bs-dismiss="offcanvas"><i class="fa-solid fa-user-plus me-2"></i>Crear cuenta</a>
+      </div>
+
+      <!-- bloque de cuenta: con sesión iniciada -->
+      <div class="menu-auth-block d-none" id="menu-auth-sesion">
+        <p class="menu-usuario-nombre" id="header-usuario-nombre"></p>
+        <a href="#" class="btn btn-menu-cuenta" id="header-btn-mi-cuenta" data-bs-dismiss="offcanvas"><i class="fa-solid fa-user me-2"></i>Mi cuenta</a>
+        <a href="#" class="btn btn-menu-cuenta" id="header-btn-logout" data-bs-dismiss="offcanvas"><i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar sesión</a>
+      </div>
+
+      <hr class="menu-offcanvas-divider">
+
+      <p class="menu-section-label">Menú</p>
+      <ul class="menu-nav-list" id="menu-nav-tabs" role="tablist">
+        <li>
+          <button class="menu-nav-link active" data-bs-toggle="pill" data-bs-target="#tab-catalogo" data-bs-dismiss="offcanvas" type="button" role="tab">
             <i class="fa-solid fa-book me-2"></i>Catálogo
           </button>
         </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-btn-contabilidad" data-bs-toggle="pill" data-bs-target="#tab-contabilidad" type="button" role="tab">
+        <li>
+          <button class="menu-nav-link" data-bs-toggle="pill" data-bs-target="#tab-contabilidad" data-bs-dismiss="offcanvas" type="button" role="tab">
             <i class="fa-solid fa-clipboard-list me-2"></i>Contabilidad
           </button>
         </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-btn-socios" data-bs-toggle="pill" data-bs-target="#tab-socios" type="button" role="tab">
+        <li>
+          <button class="menu-nav-link" data-bs-toggle="pill" data-bs-target="#tab-socios" data-bs-dismiss="offcanvas" type="button" role="tab">
             <i class="fa-solid fa-users me-2"></i>Socios
           </button>
         </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-btn-multas" data-bs-toggle="pill" data-bs-target="#tab-multas" type="button" role="tab">
+        <li>
+          <button class="menu-nav-link" data-bs-toggle="pill" data-bs-target="#tab-multas" data-bs-dismiss="offcanvas" type="button" role="tab">
             <i class="fa-solid fa-money-bill-wave me-2"></i>Multas
           </button>
         </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-btn-reportes" data-bs-toggle="pill" data-bs-target="#tab-reportes" type="button" role="tab">
+        <li>
+          <button class="menu-nav-link" id="menu-tab-btn-reportes" data-bs-toggle="pill" data-bs-target="#tab-reportes" data-bs-dismiss="offcanvas" type="button" role="tab">
             <i class="fa-solid fa-chart-line me-2"></i>Reportes
           </button>
         </li>
       </ul>
     </div>
-  </nav>
+  </div>
 
   <main class="container my-5">
 
