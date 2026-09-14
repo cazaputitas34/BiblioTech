@@ -109,7 +109,7 @@ El seeder crea automáticamente los tres roles y una cuenta de administrador:
 | Campo | Valor |
 |---|---|
 | Email | `admin@biblioteca.local` |
-| Contraseña | `cambiar123` |
+| Contraseña | `admin123` |
 
 > ⚠️ Cambiá esta contraseña apenas tengas el sistema en marcha.
 
